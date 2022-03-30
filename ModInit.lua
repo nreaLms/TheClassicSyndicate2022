@@ -13,7 +13,7 @@ local ModInit = {
 	Conflicts = {}
 }
 
-MIAMI_PrefferedStoryCar = "MIAMI_Default_PSX"
+MIAMI_PrefferedStoryCar = "car1"
 local EQUI_CARSSELECTION_SCHEME_NAME = "UI_MIAMI_PrefferedStoryCar"
 
 -----------------------------------------------------------------------------------------------
@@ -28,88 +28,50 @@ local TCS_ScriptsPackage 		= ""
 local TCS_SoundsPackage 		= ""
 
 -----------------------------------------------------------------------------------------------
--- Missions Indexes ---------------------------------------------------------------------------
+-- Missions -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
 
-local MIAMI_MissionsIndex = -1
+local TCS_MissionsIndex = -1
 
------------------------------------------------------------------------------------------------
--- Missions Lists -----------------------------------------------------------------------------
------------------------------------------------------------------------------------------------
-
-local MIAMI_MissionsList = {
+local TCS_MissionsList = {
 
 	-----------------------------------------------------------------------------------------------
 	-- DRIVER: Miami Missions
 
-	"MIAMI_00",					-- Interview									O		Playable, Complete
---	"MIAMI_NextMessage",		-- The Bank Job (Message)						O		------------------
---	"MIAMI_01",					-- The Bank Job									O		Playable, Complete
---	"MIAMI_NextMessage",		-- Hide The Evidence (Message)					O		------------------
---	"MIAMI_02",					-- Hide The Evidence							O		Playable, Complete
---	"MIAMI_NextMessage",		-- Ticco's Ride (Message)						O		------------------
---	"MIAMI_03",					-- Ticco's Ride									O		Playable, Complete
---	"MIAMI_NextMessage",		-- The Clean Up (Message)						O		------------------
---	"MIAMI_04a",				-- The Clean Up (Part 1)						O		Playable, Complete
---	"MIAMI_04b",				-- The Clean Up (Part 2)						O		Playable, Complete
---	"MIAMI_NextMessage",		-- Case For A Key (Message)						O		------------------
---	"MIAMI_05a",				-- Case For A Key								O		Playable, Complete
---	"MIAMI_05b",				-- Case For A Key (Part 2)						O		Playable, Complete
---	"MIAMI_05c",				-- Case For A Key (Part 3)						O		Playable, Complete
---	"MIAMI_NextMessage",		-- Tanner Meets Rufus (Message)					O		------------------
---	"MIAMI_06", 				-- Tanner Meets Rufus							O		Playable, Complete
---	"MIAMI_07a",				-- Bust Out Jean Paul							O		Playable, Complete
---	"MIAMI_07b",				-- Bust Out Jean Paul (Part 2)					O		Playable, Complete
---	"MIAMI_NextMessage",		-- Payback (Message)							O		------------------
---	"MIAMI_08", 				-- Payback										O		Playable, Complete	
---	"MIAMI_NextMessage",		-- A Shipment's Coming In (Message)				O		------------------
---	"MIAMI_09", 				-- A Shipment's Coming In						O		Playable, Complete	
---	"MIAMI_NextMessage",		-- Superfly Drive (Message)						O		------------------
---	"MIAMI_10",					-- Superfly Drive								O		Playable, Complete	
---	"MIAMI_NextMessage",		-- Take Out Di Angio's Car (Message)			O		------------------
---	"MIAMI_11", 				-- Take Out Di Angio's Car						O		Playable, Complete	
---	"MIAMI_NextMessage",		-- Bait for a Trap (Message)					O		------------------
---	"MIAMI_12",					-- Bait for a Trap								O		Playable, Complete
---	"MIAMI_13", 				-- The Informant								O		Playable, Complete
+	"MIAMI_00",					-- Interview, Playable (HUD is placeholder)
 
---	{screen = "MIAMI_StoryEndScreen"}
 }
 
 -----------------------------------------------------------------------------------------------
--- Levels Aliases -----------------------------------------------------------------------------
+-- Levels -------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
 
+local PARKING_LevelName		=	"ParkingClassic"
 local MIAMI_LevelName 		= 	"MiamiClassic"
-
------------------------------------------------------------------------------------------------
--- Levels Grouping ----------------------------------------------------------------------------
------------------------------------------------------------------------------------------------
 
 local TCS_Levels = {
 
+	PARKING_LevelName,
 	MIAMI_LevelName,
 	
 }
 
 -----------------------------------------------------------------------------------------------
--- Vehicles Listing ---------------------------------------------------------------------------
+-- Vehicles -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
 
 local TCS_Vehicles = {
 
-	--
+	{"car1", 							"Miami - Default (PSX)"},
+	{"car2",			 				"Miami - Default (iOS)"},
 
 }
 
 -----------------------------------------------------------------------------------------------
--- Police Audio Scripts -----------------------------------------------------------------------
+-- Audio --------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
 
 local DRIVER_PoliceAudio_PSX = "scripts/sounds/DRIVER_PoliceAudio_PSX.txt"
-
------------------------------------------------------------------------------------------------
--- Levels Using Keep Pursuit Option -----------------------------------------------------------
------------------------------------------------------------------------------------------------
 
 function IsMyLevel()
 	local levName = string.lower(world:GetLevelName())
@@ -124,7 +86,7 @@ function IsMyLevel()
 end
 
 -----------------------------------------------------------------------------------------------
--- Specify CVAR Alias -------------------------------------------------------------------------
+-- CVAR ---------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
 
 local r_pp_bloom = console.FindCvar("r_pp_bloom")
@@ -136,7 +98,7 @@ local r_pp_bloom = console.FindCvar("r_pp_bloom")
 function ModInit:Init()
 	
 	-----------------------------------------------------------------------------------------------
-	-- Load Packages ------------------------------------------------------------------------------
+	-- Packages -----------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	TCS_LevelsPackage 		= self.Path .. "/TCS_Levels.epk"
@@ -155,16 +117,16 @@ function ModInit:Init()
 	fileSystem:AddPackage(TCS_SoundsPackage, SP_MOD)
 
 	-----------------------------------------------------------------------------------------------
-	-- Load Other Stuff ---------------------------------------------------------------------------
+	-- Extra Stuff --------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
-	include("scripts/lua/MIAMI_CinematicCamera.lua")
+	include("scripts/lua/TCS_CutsceneCamera.lua")
 	include("scripts/lua/MIAMI_StoryEndScreen.lua")
 
-	storySelectionItems = include("scripts/lua/MIAMI_PrefferedStoryCar_Script.lua")
+	storySelectionItems = include("scripts/lua/MIAMI_PrefferedStoryCar.lua")
 
 	-----------------------------------------------------------------------------------------------
-	-- Load Audio Scripts -------------------------------------------------------------------------
+	-- Audio --------------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	EmitterSoundRegistry.DRIVER_Engines 	= 		"scripts/sounds/DRIVER_Engines.txt"
@@ -174,20 +136,16 @@ function ModInit:Init()
 --	EmitterSoundRegistry.DRIVER_Messages 	= 		"scripts/sounds/DRIVER_Messages.txt"
 --	EmitterSoundRegistry.DRIVER_World 		= 		"scripts/sounds/DRIVER_World.txt"
 
-	SetLevelLoadCallbacks("DRIVER_Music", function() 
-			sounds:LoadScript("scripts/sounds/DRIVER_Music.txt")
-	end, nil)
-	
-	-----------------------------------------------------------------------------------------------
-	-- Set Custom Police Script for Levels --------------------------------------------------------
-	-----------------------------------------------------------------------------------------------
+	CityTimeOfDayMusic[MIAMI_LevelName] = {
+		day_clear 			= 		"miami_day",
+		day_stormy 			= 		"la_day",
+		dawn_clear 			= 		"frisco_night",
+		night_clear 		= 		"miami_night",
+		night_stormy 		= 		"nyc_night"
+	}
 
 	CopVoiceOver[MIAMI_LevelName] 					= DRIVER_PoliceAudio_PSX;	
 	CopVoiceOver[string.lower(MIAMI_LevelName)] 	= DRIVER_PoliceAudio_PSX;
-	
-	-----------------------------------------------------------------------------------------------
-	-- Music State Logic --------------------------------------------------------------------------
-	-----------------------------------------------------------------------------------------------
 
     OldMakeDefaultMissionSettings = MakeDefaultMissionSettings
     MakeDefaultMissionSettings = function()
@@ -200,7 +158,7 @@ function ModInit:Init()
 	end
 
 	-----------------------------------------------------------------------------------------------
-	-- Store Old CVAR Value & Apply New One -------------------------------------------------------
+	-- CVAR ---------------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	local saveBloom = r_pp_bloom:GetInt()
@@ -228,25 +186,13 @@ function ModInit:Init()
 	end
 
 	-----------------------------------------------------------------------------------------------
-	-- Music Selection For Each Level -------------------------------------------------------------
-	-----------------------------------------------------------------------------------------------
-
-	CityTimeOfDayMusic[MIAMI_LevelName] = {
-		day_clear 			= 		"miami_day",
-		day_stormy 			= 		"la_day",
-		dawn_clear 			= 		"frisco_night",
-		night_clear 		= 		"miami_night",
-		night_stormy 		= 		"nyc_night"
-	}
-
-	-----------------------------------------------------------------------------------------------
-	-- Add Levels To Selection List ---------------------------------------------------------------
+	-- Levels -------------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 	
 	table.insert(MenuCityList, {MIAMI_LevelName, "Miami (Classic)"})
 
 	-----------------------------------------------------------------------------------------------
-	-- Add Vehicles To Selection List -------------------------------------------------------------
+	-- Vehicles -----------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	for i,v in ipairs(TCS_Vehicles) do
@@ -254,7 +200,7 @@ function ModInit:Init()
 	end
 
 	-----------------------------------------------------------------------------------------------
-	-- Load Minigames -----------------------------------------------------------------------------
+	-- Minigames ----------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	table.insert(missions["minigame/survival"], {"MIAMI_Survival01", "Miami Classic (Miami Beach)"})
@@ -262,10 +208,10 @@ function ModInit:Init()
 	table.insert(missions["minigame/getaway"], {"MIAMI_EuroDemo43", "Miami Classic (Euro Demo 43)"})
 
 	-----------------------------------------------------------------------------------------------
-	-- Load Missions ------------------------------------------------------------------------------
+	-- Missions -----------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
-	missions["TCS_STORY"] = MIAMI_MissionsList
+	missions["TCS_STORY"] = TCS_MissionsList
 
 	local MIAMI_MissionsElems = 
 	{
@@ -282,7 +228,7 @@ function ModInit:Init()
 		},
 	}
 	
-	MIAMI_MissionsIndex = table.insert(StoryGameExtraElems, 
+	TCS_MissionsIndex = table.insert(StoryGameExtraElems, 
 		MenuStack.MakeSubMenu("The Classic Story", storySelectionItems, nil, EQUI_CARSSELECTION_SCHEME_NAME))
 end
 
@@ -293,15 +239,11 @@ end
 function ModInit:DeInit()
 
 	-----------------------------------------------------------------------------------------------
-	-- Unload Mission Table -----------------------------------------------------------------------
+	-- Audio --------------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	ResetMissionTable = OldResetMissionTable
 	SetupInitialSettings = OldSetupInitialSettings
-
-	-----------------------------------------------------------------------------------------------
-	-- Unload Audio Scripts -----------------------------------------------------------------------
-	-----------------------------------------------------------------------------------------------
 
 	EmitterSoundRegistry.DRIVER_Engines 		= 		nil
 	EmitterSoundRegistry.DRIVER_Interview 		= 		nil
@@ -310,24 +252,21 @@ function ModInit:DeInit()
 --	EmitterSoundRegistry.DRIVER_Messages 		= 		nil
 --	EmitterSoundRegistry.DRIVER_World 			= 		nil
 
-	SetLevelLoadCallbacks("DRIVER_Music", nil, nil)
-
-
 	-----------------------------------------------------------------------------------------------
-	-- Unload Camera ------------------------------------------------------------------------------
+	-- Camera -------------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
-	MIAMI_CinematicCamera = nil
+	TCS_CutsceneCamera = nil
 
 	-----------------------------------------------------------------------------------------------
-	-- Unload Missions ----------------------------------------------------------------------------
+	-- Missions -----------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
-	table.remove(StoryGameExtraElems, MIAMI_MissionsIndex)
+	table.remove(StoryGameExtraElems, TCS_MissionsIndex)
 	missions["TCS_STORY"] = nil
 
 	-----------------------------------------------------------------------------------------------
-	-- Unload Minigames ---------------------------------------------------------------------------
+	-- Minigames ----------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	table.remove(missions["minigame/survival"], MIAMI_Survival01)
@@ -335,7 +274,7 @@ function ModInit:DeInit()
 	table.remove(missions["minigame/getaway"], MIAMI_EuroDemo43)
 
 	-----------------------------------------------------------------------------------------------
-	-- Unload Levels ------------------------------------------------------------------------------
+	-- Levels -------------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	for i,v in ipairs(MenuCityList) do
@@ -349,7 +288,7 @@ function ModInit:DeInit()
 	end
 
 	-----------------------------------------------------------------------------------------------
-	-- Unload Vehicles ----------------------------------------------------------------------------
+	-- Vehicles -----------------------------------------------------------------------------------
 	-----------------------------------------------------------------------------------------------
 
 	for i,v in ipairs(MenuCarsList) do
