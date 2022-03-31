@@ -13,7 +13,7 @@ local ModInit = {
 	Conflicts = {}
 }
 
-MIAMI_PrefferedStoryCar = "car1"
+MIAMI_PrefferedStoryCar = "MIAMI_Default_PSX"
 local EQUI_CARSSELECTION_SCHEME_NAME = "UI_MIAMI_PrefferedStoryCar"
 
 -----------------------------------------------------------------------------------------------
@@ -62,8 +62,8 @@ local TCS_Levels = {
 
 local TCS_Vehicles = {
 
-	{"car1", 							"Miami - Default (PSX)"},
-	{"car2",			 				"Miami - Default (iOS)"},
+	{"MIAMI_Default_PSX", 							"Miami - Default (PSX)"},
+	{"MIAMI_Default_iOS",			 				"Miami - Default (iOS)"},
 
 }
 
