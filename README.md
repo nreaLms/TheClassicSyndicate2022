@@ -1,6 +1,6 @@
 # TheClassicSyndicate2022
  
-Install: drop 'TheClassicSyndicate2022' folder in /Addons folder
+Install: rename the folder to 'TheClassicSyndicate2022' and drop it in /Addons folder
 
 - MIAMI CLASSIC (WiP)
 
